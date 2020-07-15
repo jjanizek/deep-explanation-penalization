@@ -202,9 +202,8 @@ def train_model(model,dataloaders, criterion, optimizer, num_epochs=25):
                     if phase == 'train' and regularizer_rate !=0:
                         inputs.requires_grad = True
                         add_loss = gradient_sum(inputs, labels, seg, model, criterion)  
-                        if add_loss!=0:
-                            (regularizer_rate*add_loss).backward()
-                            optimizer.step()
+                        (regularizer_rate*add_loss).backward()
+                        optimizer.step()
                         #print(torch.cuda.memory_allocated()/(np.power(10,9)))
                         optimizer.zero_grad()   
                         running_loss_cd +=add_loss.item() * inputs.size(0)
