@@ -201,17 +201,16 @@ def train_model(model,dataloaders, criterion, optimizer, background_dataset, num
                     # need to do calc beforehand because we do need the gradients
                     if phase == 'train' and regularizer_rate !=0:
                         inputs.requires_grad = True
-                        if inputs.shape[0] == 8:
+                        if inputs.shape[0] == 8: # to match batch size
                             eg = APExp.shap_values(model,inputs,sparse_labels=torch.argmax(model(inputs),axis=1))
 #                             print(eg.abs().sum())
                             add_loss = torch.abs(eg.sum(dim=1).masked_select(seg.byte())**2).sum()
 #                             print(seg.sum())
 
-                            if add_loss!=0:
-                                (regularizer_rate*add_loss).backward()
-                                optimizer.step()
+                            (regularizer_rate*add_loss).backward()
+                            optimizer.step()
                             #print(torch.cuda.memory_allocated()/(np.power(10,9)))
-                                optimizer.zero_grad()   
+                            optimizer.zero_grad()   
                             running_loss_cd +=add_loss.item() * inputs.size(0)
                         else:
                              pass
